@@ -1,0 +1,23 @@
+﻿<Window x:Class="MyPhotoEditor.JPGQuality"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyPhotoEditor"
+        mc:Ignorable="d"
+        Title="JPGQuality" Height="200" Width="200">
+    <Grid x:Name="grid_jpeg" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Foreground="Black" Text="Jakość:" Grid.Column="1" Grid.Row="0"/>
+        <TextBox x:Name="tbJPEG" Grid.Column="1" Grid.Row="1"></TextBox>
+        <Button x:Name="ButtonSubmit" Content="Submit" Grid.Row="3" Grid.Column="1" Click="ButtonSubmit_Click"></Button>
+    </Grid>
+</Window>

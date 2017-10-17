@@ -28,3 +28,5 @@ C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\ru\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
+C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\JPGQuality.g.cs
+C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\JPGQuality.baml

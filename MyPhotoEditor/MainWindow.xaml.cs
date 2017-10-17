@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +17,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using Image = System.Drawing.Image;
+using Point = System.Windows.Point;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace MyPhotoEditor
 {
@@ -32,6 +41,7 @@ namespace MyPhotoEditor
         private double x;
         private double y;
         private Color color;
+        Bitmap bitmap;
         int state;
         private bool buttonRClicked, buttonEClicked, buttonLClicked, buttonCClicked;
         public MainWindow()
@@ -156,8 +166,6 @@ namespace MyPhotoEditor
                     q = e.GetPosition(inkCanvas1);
                     line.X2 = q.X;
                     line.Y2 = q.Y;
-                    Canvas.SetLeft(line,line.X1);
-                    Canvas.SetLeft(line, line.Y1);
                     break;
             }
 
@@ -195,6 +203,99 @@ namespace MyPhotoEditor
             state = 1;
             grid_Change.Visibility = Visibility.Visible;
             ButtonRectangle.Background = Brushes.CornflowerBlue;
+        }
+        
+        public static System.Drawing.Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
+        {
+            var destRect = new System.Drawing.Rectangle(0, 0, width, height);
+            var destImage = new System.Drawing.Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = System.Drawing.Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            string filename = "";
+            PPMReader ppm = new PPMReader();
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = ".ppm";
+            dlg.Filter = "PPM Files (*.ppm)|*.ppm|JPEG Files (*.jpeg)|*.jpeg";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                // Open document 
+                filename = dlg.FileName;
+                bitmap = ppm.ReadFile(filename, "test123.bmp");
+                if (bitmap.Height < 100 && bitmap.Width < 100)
+                    bitmap = ResizeImage(bitmap, bitmap.Width * 100, bitmap.Height * 100);
+                else
+                    bitmap = ResizeImage(bitmap, bitmap.Width, bitmap.Height);
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                    memory.Position = 0;
+                    BitmapImage bitmapimage = new BitmapImage();
+                    bitmapimage.BeginInit();
+                    bitmapimage.StreamSource = memory;
+                    bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapimage.EndInit();
+
+                    ImageSource imageSource = bitmapimage;
+                    ImageView.Source = imageSource;
+                }
+
+
+            }
+        }
+
+        private void MenuItem_OnClickSave(object sender, RoutedEventArgs e)
+        {
+            if (ImageView.Source != null)
+            {
+                ImageCodecInfo jpg = GetEncoder(ImageFormat.Jpeg);
+
+
+                System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                JPGQuality jpgWindow = new JPGQuality();
+                jpgWindow.Show();
+                long quality = (long) Convert.ToDouble(jpgWindow.Value);
+                EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, quality);
+                myEncoderParameters.Param[0] = myEncoderParameter;
+                bitmap.Save(@"zapisany.jpg", jpg, myEncoderParameters);
+
+            }
+        }
+        private ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
         }
     }
 

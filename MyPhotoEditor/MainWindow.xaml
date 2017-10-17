@@ -19,16 +19,36 @@
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="20*">
             </RowDefinition>
             <RowDefinition Height="5*"></RowDefinition>
         </Grid.RowDefinitions>
         <Canvas x:Name="inkCanvas1" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="20" Margin="0,0,23,8" MouseUp="inkCanvas1_MouseUp" MouseDown="inkCanvas1_MouseDown" MouseMove="inkCanvas1_MouseMove" MouseLeftButtonDown="inkCanvas1_MouseLeftButtonDown">
-            <!--<Rectangle x:Name="RectangleViewModel">
-            </Rectangle>-->
+            <Image Name="ImageView">
+            </Image>
         </Canvas>
-       
-
+        <Grid x:Name="Grid_ComboMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="10*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Menu Background="Transparent" Grid.Column="0" Grid.Row="0">
+                <MenuItem Foreground="White" Header="Plik">
+                    <MenuItem Foreground="Black" Header="Otwórz plik" Click="MenuItem_OnClick"/>
+                    <MenuItem Foreground="Black" Header="Zapisz plik" Click="MenuItem_OnClickSave"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
         <Grid x:Name="Grid_Menu" Grid.Column="0" Grid.Row="1" Grid.RowSpan="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
@@ -65,7 +85,7 @@
             <xctk:ColorPicker BorderBrush="CornflowerBlue"  Grid.Column="1" Grid.Row="4" Name="ClrPckerBackground" SelectedColorChanged="ClrPcker_Background_SelectedColorChanged"></xctk:ColorPicker>
         </Grid>
         
-        <Grid x:Name="grid_Change" Grid.Column ="1" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="3">
+        <Grid x:Name="grid_Change" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
