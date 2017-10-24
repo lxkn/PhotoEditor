@@ -83,8 +83,46 @@
                 <Image Source="C:\\Users\\Seba\\Documents\\visual studio 2017\\Projects\\MyPhotoEditor\\MyPhotoEditor\\kosz.png"></Image>
             </Button>
             <xctk:ColorPicker BorderBrush="CornflowerBlue"  Grid.Column="1" Grid.Row="4" Name="ClrPckerBackground" SelectedColorChanged="ClrPcker_Background_SelectedColorChanged"></xctk:ColorPicker>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonCMYK" Grid.Row="5" Grid.Column="1"  Click="ButtonCMYK_OnClick" Content="CMYK" >
+            </Button>
         </Grid>
-        
+        <Grid x:Name="grid_CMYK" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="Error" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="20"></TextBlock>
+            <TextBlock Foreground="White" Text="C:" Grid.Column="0" Grid.Row="0"/>
+            <TextBlock Foreground="White" Text="M:" Grid.Column="0" Grid.Row="1"/>
+            <TextBlock Foreground="White" Text="Y:" Grid.Column="0" Grid.Row="2"/>
+            <TextBlock Foreground="White" Text="K:" Grid.Column="0" Grid.Row="3"/>
+            <TextBox x:Name="tbC" FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="1" Grid.Row="0"></TextBox>
+            <TextBox x:Name="tbM" FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="1" Grid.Row="1"></TextBox>
+            <TextBox x:Name="tbY" FontSize="8"  BorderBrush="CornflowerBlue" Grid.Column="1" Grid.Row="2"></TextBox>
+            <TextBox x:Name="tbK" FontSize="8"  BorderBrush="CornflowerBlue" Grid.Column="1" Grid.Row="3"></TextBox>
+            <Button x:Name="buttonChangeCMYK" BorderBrush="CornflowerBlue" Grid.Column="6" Grid.Row="2" Content="APPLY" FontSize="7" Background="Transparent" Foreground="White" Click="ButtonChangeCMYK_OnClick"/>
+            <Button x:Name="buttonRGB" BorderBrush="CornflowerBlue" Grid.Column="6" Grid.Row="1" Content="CHANGE" FontSize="7" Background="Transparent" Foreground="White" Click="ButtonRGB_OnClick"/>
+            <Canvas x:Name="CanvasColor" Grid.Row="0" Grid.Column="6"></Canvas>
+            <TextBlock Foreground="White" Text="R:" Grid.Column="3" Grid.Row="0"/>
+            <TextBlock Foreground="White" Text="G:" Grid.Column="3" Grid.Row="1"/>
+            <TextBlock Foreground="White" Text="B:" Grid.Column="3" Grid.Row="2"/>
+            <TextBox x:Name="tbR"  FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="4" Grid.Row="0"></TextBox>
+            <TextBox x:Name="tbG"  FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="4" Grid.Row="1"></TextBox>
+            <TextBox x:Name="tbB"  FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="4" Grid.Row="2"></TextBox>
+        </Grid>
         <Grid x:Name="grid_Change" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>

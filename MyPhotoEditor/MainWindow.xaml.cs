@@ -41,6 +41,8 @@ namespace MyPhotoEditor
         private double x;
         private double y;
         private Color color;
+        private int mode;
+        private int switcher;
         Bitmap bitmap;
         int state;
         private bool buttonRClicked, buttonEClicked, buttonLClicked, buttonCClicked;
@@ -48,13 +50,20 @@ namespace MyPhotoEditor
         {
             InitializeComponent();
             grid_Change.Visibility = Visibility.Collapsed;
+            grid_CMYK.Visibility = Visibility.Collapsed;
             rectList = new List<Rectangle>();
             ellipses = new List<Ellipse>();
             lines = new List<Line>();
             color = new Color();
             ClrPckerBackground.SelectedColor = Color.FromArgb(150, 000, 000, 000);
             inkCanvas1.Background = new SolidColorBrush(Color.FromRgb(246, 246, 246));
-            
+            tbR.IsReadOnly = true;
+            tbG.IsReadOnly = true;
+            tbB.IsReadOnly = true;
+            switcher = 2;
+            mode = 1;
+            Error.Foreground = Brushes.Green;
+            Error.Text = "Zmieniasz CMK -> RGB";
         }
         
         private void buttonClear_Click(object sender, RoutedEventArgs e)
@@ -184,6 +193,7 @@ namespace MyPhotoEditor
             state = 3;
             grid_Change.Visibility = Visibility.Visible;
             ButtonLine.Background=Brushes.CornflowerBlue;
+            grid_CMYK.Visibility = Visibility.Collapsed;
         }
 
         private void ButtonEllipse_OnClick(object sender, RoutedEventArgs e)
@@ -193,6 +203,7 @@ namespace MyPhotoEditor
             state = 2;
             grid_Change.Visibility = Visibility.Visible;
             ButtonEllipse.Background = Brushes.CornflowerBlue;
+            grid_CMYK.Visibility = Visibility.Collapsed;
         }
 
         private void ButtonRectangle_OnClick(object sender, RoutedEventArgs e)
@@ -203,6 +214,7 @@ namespace MyPhotoEditor
             state = 1;
             grid_Change.Visibility = Visibility.Visible;
             ButtonRectangle.Background = Brushes.CornflowerBlue;
+            grid_CMYK.Visibility = Visibility.Collapsed;
         }
         
         public static System.Drawing.Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
@@ -296,6 +308,104 @@ namespace MyPhotoEditor
                 }
             }
             return null;
+        }
+
+        private void ButtonChangeCMYK_OnClick(object sender, RoutedEventArgs e)
+        {
+            grid_Change.Visibility = Visibility.Collapsed;
+            double k, c, m, y;
+            int r, g, b;
+           
+            if (mode==1)
+            {
+                if (string.IsNullOrWhiteSpace(tbK.Text) && (string.IsNullOrWhiteSpace(tbC.Text)) &&
+                        (string.IsNullOrWhiteSpace(tbM.Text)) && (string.IsNullOrWhiteSpace(tbY.Text)))
+                        return;
+                if (tbC.Text.Contains(".") || tbM.Text.Contains(".") || tbY.Text.Contains(".") ||
+                    tbK.Text.Contains("."))
+                {
+                    Error.Foreground=Brushes.Red;
+                    Error.Text = "PO PRZECINKU!!!";
+                    return;
+                }
+
+                c = Convert.ToDouble(tbC.Text);
+                m = Convert.ToDouble(tbM.Text);
+                y = Convert.ToDouble(tbY.Text);
+                k = Convert.ToDouble(tbK.Text);
+
+                //r = 1 - Math.Min(1, c * (1 - k) + k);
+                //g = 1 - Math.Min(1, m * (1 - k) + k);
+                //b = 1 - Math.Min(1, y * (1 - k) + k);
+                r = Convert.ToInt32(255 * (1 - c) * (1 - k));
+                g = Convert.ToInt32(255 * (1 - m) * (1 - k));
+                b = Convert.ToInt32(255 * (1 - y) * (1 - k));
+                tbR.Text = r.ToString();
+                tbG.Text = g.ToString();
+                tbB.Text = b.ToString();
+                CanvasColor.Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(tbR.Text), Convert.ToByte(tbG.Text), Convert.ToByte(tbB.Text)));
+            }
+            if (mode == 2)
+            {
+                if ((string.IsNullOrWhiteSpace(tbR.Text)) && (string.IsNullOrWhiteSpace(tbG.Text)) &&
+                    (string.IsNullOrWhiteSpace(tbB.Text)))
+                    return;
+
+                double rp, gp, bp;
+                rp = (Convert.ToDouble(tbR.Text) / 255);
+                gp = (Convert.ToDouble(tbG.Text) / 255);
+                bp = (Convert.ToDouble(tbB.Text) / 255);
+                k = 1 - Math.Max(rp, Math.Max(gp, bp));
+                c = Convert.ToDouble((1 - rp - k) / (1 - k));
+                m = Convert.ToDouble((1 - gp - k) / (1 - k));
+                y = Convert.ToDouble((1 - bp - k) / (1 - k));
+                tbC.Text = Math.Round(c, 5).ToString();
+                tbM.Text = Math.Round(m, 5).ToString();
+                tbY.Text = Math.Round(y, 5).ToString();
+                tbK.Text = Math.Round(k, 5).ToString();
+                CanvasColor.Background = new SolidColorBrush(Color.FromRgb(Convert.ToByte(tbR.Text), Convert.ToByte(tbG.Text), Convert.ToByte(tbB.Text)));
+            }
+
+           
+        }
+
+        private void ButtonRGB_OnClick(object sender, RoutedEventArgs e)
+        {
+            Error.Foreground = Brushes.Green;
+            if (switcher == 1)
+            {
+                tbR.IsReadOnly = true;
+                tbG.IsReadOnly = true;
+                tbB.IsReadOnly = true;
+                tbC.IsReadOnly = false;
+                tbM.IsReadOnly = false;
+                tbY.IsReadOnly = false;
+                tbK.IsReadOnly = false;
+                mode = 1;
+                switcher = 2;
+                Error.Text = "Zmieniasz CMK -> RGB";
+                return;
+            }
+            if (switcher == 2)
+            {
+                tbR.IsReadOnly = false;
+                tbG.IsReadOnly = false;
+                tbB.IsReadOnly = false;
+                tbC.IsReadOnly = true;
+                tbM.IsReadOnly = true;
+                tbY.IsReadOnly = true;
+                tbK.IsReadOnly = true;
+                mode = 2;
+                switcher = 1;
+                Error.Text = "Zmieniasz RGB->CMK";
+                return;
+            }
+        }
+
+        private void ButtonCMYK_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            grid_CMYK.Visibility = Visibility.Visible;
         }
     }
 
