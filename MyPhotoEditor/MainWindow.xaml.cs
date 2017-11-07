@@ -46,6 +46,12 @@ namespace MyPhotoEditor
         Bitmap bitmap;
         int state;
         private bool buttonRClicked, buttonEClicked, buttonLClicked, buttonCClicked;
+
+        public ImageSource DisplayedImage
+        {
+            get { return new BitmapImage(new Uri(@"C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\b.jpg")); }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -64,6 +70,8 @@ namespace MyPhotoEditor
             mode = 1;
             Error.Foreground = Brushes.Green;
             Error.Text = "Zmieniasz CMK -> RGB";
+            //background.ImageSource = new BitmapImage(new Uri("pack://application:,,,/MyPhotoEditor;/b.jpg"));
+            name.DataContext = this;
         }
         
         private void buttonClear_Click(object sender, RoutedEventArgs e)
@@ -192,6 +200,7 @@ namespace MyPhotoEditor
             ButtonRectangle.Background = Brushes.Transparent;
             state = 3;
             grid_Change.Visibility = Visibility.Visible;
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
             ButtonLine.Background=Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -202,6 +211,7 @@ namespace MyPhotoEditor
             ButtonLine.Background = Brushes.Transparent;
             state = 2;
             grid_Change.Visibility = Visibility.Visible;
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
             ButtonEllipse.Background = Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -213,6 +223,7 @@ namespace MyPhotoEditor
             ButtonLine.Background = Brushes.Transparent;
             state = 1;
             grid_Change.Visibility = Visibility.Visible;
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
             ButtonRectangle.Background = Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -244,6 +255,9 @@ namespace MyPhotoEditor
 
         private void MenuItem_OnClick(object sender, RoutedEventArgs e)
         {
+            grid_Change.Visibility = Visibility.Collapsed;
+            grid_CMYK.Visibility = Visibility.Collapsed;
+            Grid_LoadingFiles.Visibility = Visibility.Visible;
             string filename = "";
             PPMReader ppm = new PPMReader();
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -310,9 +324,410 @@ namespace MyPhotoEditor
             return null;
         }
 
+        private void CheckTextBox()
+        {
+            if(string.IsNullOrWhiteSpace(fileR.Text))
+            {
+                fileR.Text = "0";
+            }
+            if(string.IsNullOrWhiteSpace(fileG.Text))
+            {
+                fileG.Text = "0";
+            }
+            if(string.IsNullOrWhiteSpace(fileB.Text))
+            {
+                fileB.Text = "0";
+            }
+            
+
+        }
+
+        private void ButtonAdd_Click(object sender, RoutedEventArgs e)
+        {
+            CheckTextBox();
+            int valr,valg,valb,sumr,sumg,sumb;
+            valr = Convert.ToInt32(fileR.Text);
+            valg = Convert.ToInt32(fileG.Text);
+            valb = Convert.ToInt32(fileB.Text);
+            if(valr >= 0&& valr <= 255 && valg >= 0 && valg <= 255 && valb >= 0 && valb <= 255)
+            {
+                if(bitmap!=null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+                            sumr = valr + r;
+                            sumg = valg + g;
+                            sumb = valb + b;
+                            if(sumr>255)
+                            {
+                                sumr = 255;
+                            }
+                            if(sumg>255)
+                            {
+                                sumg = 255;
+                            }
+                            if(sumb>255)
+                            {
+                                sumb = 255;
+                            }
+                            color = System.Drawing.Color.FromArgb(sumr, sumg, sumb);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    Reload();
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void ButtonMinus_Click(object sender, RoutedEventArgs e)
+        {
+            CheckTextBox();
+            int valr, valg, valb, sumr, sumg, sumb;
+            valr = Convert.ToInt32(fileR.Text);
+            valg = Convert.ToInt32(fileG.Text);
+            valb = Convert.ToInt32(fileB.Text);
+            if (valr >= 0 && valr <= 255 && valg >= 0 && valg <= 255 && valb >= 0 && valb <= 255)
+            {
+                if (bitmap != null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+                            sumr = r - valr;
+                            sumg = g - valg;
+                            sumb = b - valb;
+                            if (sumr < 0)
+                            {
+                                sumr = 0;
+                            }
+                            if (sumg < 0)
+                            {
+                                sumg = 0;
+                            }
+                            if (sumb < 0)
+                            {
+                                sumb = 0;
+                            }
+                            if (valr == 0)
+                            {
+                                sumr = r;
+                            }
+                            if (valb == 0)
+                            {
+                                sumb = b;
+                            }
+                            if (valg == 0)
+                            {
+                                sumg = g;
+                            }
+
+                            color = System.Drawing.Color.FromArgb(sumr, sumg, sumb);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    Reload();
+                }
+            }
+            else
+            {
+                return;
+            }
+
+        }
+
+        private void ButtonMultiply_Click(object sender, RoutedEventArgs e)
+        {
+            CheckTextBox();
+            int valr, valg, valb, sumr, sumg, sumb;
+            valr = Convert.ToInt32(fileR.Text);
+            valg = Convert.ToInt32(fileG.Text);
+            valb = Convert.ToInt32(fileB.Text);
+            if (valr >= 0 && valr <= 255 && valg >= 0 && valg <= 255 && valb >= 0 && valb <= 255)
+            {
+                if (bitmap != null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+                            sumr = valr * r;
+                            sumg = valg * g;
+                            sumb = valb * b;
+                            if (sumr > 255)
+                            {
+                                sumr = 255;
+                            }
+                            if (sumg > 255)
+                            {
+                                sumg = 255;
+                            }
+                            if (sumb > 255)
+                            {
+                                sumb = 255;
+                            }
+                            if(valr==0)
+                            {
+                                sumr = r;
+                            }
+                            if(valb == 0)
+                            {
+                                sumb = b;
+                            }
+                            if(valg == 0)
+                            {
+                                sumg = g;
+                            }
+
+                            color = System.Drawing.Color.FromArgb(sumr, sumg, sumb);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+                    
+                    Reload();
+                }
+            }
+            
+            else
+            {
+                return;
+            }
+        }
+
+
+        private void ButtonSplit_Click(object sender, RoutedEventArgs e)
+        {
+            CheckTextBox();
+            int valr, valg, valb, sumr, sumg, sumb;
+            valr = Convert.ToInt32(fileR.Text);
+            valg = Convert.ToInt32(fileG.Text);
+            valb = Convert.ToInt32(fileB.Text);
+            if (valr >= 0 && valr <= 255 && valg >= 0 && valg <= 255 && valb >= 0 && valb <= 255)
+            {
+                if (bitmap != null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+                            sumr = r;
+                            sumg = g;
+                            sumb = b;
+
+                            if (valr !=0)
+                                sumr = r / valr;
+                            if (valg != 0)
+                                sumg = g / valg;
+
+                            if (valb != 0)
+                                sumb = b / valb;
+                            if (sumr > 255)
+                            {
+                                sumr = 255;
+                            }
+                            if (sumg > 255)
+                            {
+                                sumg = 255;
+                            }
+                            if (sumb > 255)
+                            {
+                                sumb = 255;
+                            }
+                            if(valr == 0 )
+                            {
+                                sumr = r;
+                            }
+                            if(valb == 0)
+                            {
+                                sumb = b;
+                            }
+                            if(valg == 0)
+                            {
+                                sumg = g;
+                            }
+                            
+                            color = System.Drawing.Color.FromArgb(sumr, sumg, sumb);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    Reload();
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void ButtonBrightness_Click(object sender, RoutedEventArgs e)
+        {
+            //try
+            //{
+            //    int value;
+            //    if (bitmap != null)
+            //    {
+            //        for (int i = 0; i < bitmap.Width; i++)
+            //        {
+            //            for (int j = 0; j < bitmap.Height; j++)
+            //            {
+            //                var color = bitmap.GetPixel(i, j);
+            //                int tempvalue;
+            //                var r = color.R;
+            //                var g = color.G;
+            //                var b = color.B;
+
+            //                var intensity = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+            //                color = System.Drawing.Color.FromArgb((int)(intensity), (int)(intensity), (int)(intensity));
+
+            //                bitmap.SetPixel(i, j, color);
+            //            }
+            //        }
+            //        Reload();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+            CheckTextBox();
+            int value,valr,valb,valg, sumr, sumg, sumb;
+            //valr = Convert.ToInt32(fileR.Text);
+            //valg = Convert.ToInt32(fileG.Text);
+            //valb = Convert.ToInt32(fileB.Text);
+            if (Check.IsChecked == true)
+            {
+                value = Convert.ToInt32(Brightness.Value);
+                valr = (value * 255) / 100;
+                valg = valr;
+                valb = valr;
+            }
+            else
+            {
+                value = Convert.ToInt32(Brightness.Value);
+                valr = -((value * 255) / 100);
+                valg = valr;
+                valb = valr;
+            }
+            
+                if (bitmap != null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+                            sumr = valr + r;
+                            sumg = valg + g;
+                            sumb = valb + b;
+                            if (sumr > 255)
+                            {
+                                sumr = 255;
+                            }
+                            if (sumr < 0) sumr = 0;
+                            if (sumg > 255)
+                            {
+                                sumg = 255;
+                            }
+                            if (sumg < 0) sumg = 0;
+                            if (sumb > 255)
+                            {
+                                sumb = 255;
+                            }
+                            if (sumb < 0) sumb = 0;
+                            color = System.Drawing.Color.FromArgb(sumr, sumg, sumb);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    Reload();
+                }
+            else
+            {
+                return;
+            }
+        }
+
+        private void ButtonGray_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int value;
+                if (bitmap != null)
+                {
+                    for (int i = 0; i < bitmap.Width; i++)
+                    {
+                        for (int j = 0; j < bitmap.Height; j++)
+                        {
+                            var color = bitmap.GetPixel(i, j);
+                            int tempvalue;
+                            var r = color.R;
+                            var g = color.G;
+                            var b = color.B;
+
+                            var intensity = (r + g + b) / 3;
+                            color = System.Drawing.Color.FromArgb((int)(intensity), (int)(intensity), (int)(intensity));
+
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        public void Reload()
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+
+                ImageSource imageSource = bitmapimage;
+                ImageView.Source = imageSource;
+            }
+        }
+
+
         private void ButtonChangeCMYK_OnClick(object sender, RoutedEventArgs e)
         {
             grid_Change.Visibility = Visibility.Collapsed;
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
             double k, c, m, y;
             int r, g, b;
            
