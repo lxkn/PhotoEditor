@@ -30,3 +30,13 @@ C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\JPGQuality.g.cs
 C:\Users\Seba\documents\visual studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\JPGQuality.baml
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\Histogram.g.cs
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\Histogram.baml
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.dll
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.Imaging.dll
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.Math.dll
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.xml
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.Imaging.xml
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\bin\Debug\AForge.Math.xml
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\Thresholding.g.cs
+C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\obj\Debug\Thresholding.baml

@@ -32,6 +32,7 @@ namespace MyPhotoEditor
     {
         private Point p;
         private Point q;
+        private Rect s;
         private Rectangle rectangle;
         private Ellipse ellipse;
         private Line line;
@@ -43,10 +44,20 @@ namespace MyPhotoEditor
         private Color color;
         private int mode;
         private int switcher;
+        private List<Rect> pListAlfa;
         Bitmap bitmap;
         int state;
         private bool buttonRClicked, buttonEClicked, buttonLClicked, buttonCClicked;
-
+        Point[] points = new Point[4];
+        Point[] points2 = new Point[30];
+        Line[] lineArray = new Line[12];
+        List<Point> changeAlfaList;
+        int nextPoint = 0;
+        int nextPoint2 = 0;
+        int stateButton = 0;
+        int h = 0, v = 0;
+        int changeLX, changeLY, changeL;
+        private List<Rectangle> pointList;
         public ImageSource DisplayedImage
         {
             get { return new BitmapImage(new Uri(@"C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\b.jpg")); }
@@ -57,10 +68,14 @@ namespace MyPhotoEditor
             InitializeComponent();
             grid_Change.Visibility = Visibility.Collapsed;
             grid_CMYK.Visibility = Visibility.Collapsed;
+            Grid_2d.Visibility = Visibility.Collapsed;
             rectList = new List<Rectangle>();
             ellipses = new List<Ellipse>();
             lines = new List<Line>();
             color = new Color();
+            pointList = new List<Rectangle>();
+            pListAlfa = new List<Rect>();
+            changeAlfaList = new List<Point>();
             ClrPckerBackground.SelectedColor = Color.FromArgb(150, 000, 000, 000);
             inkCanvas1.Background = new SolidColorBrush(Color.FromRgb(246, 246, 246));
             tbR.IsReadOnly = true;
@@ -149,7 +164,138 @@ namespace MyPhotoEditor
                     line.Y1 = p.Y;
                     inkCanvas1.Children.Add(line);
                     break;
+                case 4:
+                    try
+                    {
+                        points[nextPoint] = Mouse.GetPosition(inkCanvas1);
+                        Mouse.Capture(null);
+                        SolidColorBrush color = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                        Rectangle mark = new Rectangle
+                        {
+                            Stroke = color,
+                            StrokeThickness = 5,
+                            Height = 3,
+                            Width = 3
+
+                        };
+                        mark.SetValue(Canvas.LeftProperty, points[nextPoint].X);
+                        mark.SetValue(Canvas.TopProperty, points[nextPoint].Y);
+                        inkCanvas1.Children.Add(mark);
+                        nextPoint++;
+                    }
+                    catch(Exception esa)
+                    {
+                        Console.Write(esa.Message.ToString());
+                        nextPoint = 0;
+                        inkCanvas1.Children.Clear();
+                    }
+
+
+                    break;
+                case 5:
+                    try
+                    {
+                        points2[nextPoint2] = Mouse.GetPosition(inkCanvas1);
+                        Mouse.Capture(null);
+                        SolidColorBrush c = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                        Rectangle mark2 = new Rectangle
+                        {
+                            Stroke = c,
+                            StrokeThickness = 5,
+                            Height = 3,
+                            Width = 3
+
+                        };
+                        if (stateButton == 0)
+                        {
+                            mark2.SetValue(Canvas.LeftProperty, points2[nextPoint2].X);
+                            mark2.SetValue(Canvas.TopProperty, points2[nextPoint2].Y);
+                            pointList.Add(mark2);
+                            inkCanvas1.Children.Add(mark2);
+                            break;
+                        }
+                        else
+                        {
+                            pointList[pointList.Count - 1].SetValue(Canvas.LeftProperty, points2[nextPoint].X + h);
+                            pointList[pointList.Count - 1].SetValue(Canvas.TopProperty, points2[nextPoint].Y + v);
+                            Rectangle next = new Rectangle
+                            {
+                                Stroke = c,
+                                StrokeThickness = 3,
+                                Height = 3,
+                                Width = 3
+                            };
+                            next = pointList[pointList.Count - 1];
+                            inkCanvas1.Children.Add(next);
+                            pointList.Add(next);
+                        }
+                    }
+                    catch(Exception es)
+                    {
+                        //nextPoint = 0;
+                    }
+                    break;
+                case 6:
+                    try
+                    {
+                        points2[nextPoint2] = Mouse.GetPosition(inkCanvas1);
+                        Mouse.Capture(null);
+                        SolidColorBrush c = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                        Rectangle mark6 = new Rectangle
+                        {
+                            Stroke = c,
+                            StrokeThickness = 5,
+                            Height = 3,
+                            Width = 3
+
+                        };
+                            mark6.SetValue(Canvas.LeftProperty, points2[nextPoint2].X);
+                            mark6.SetValue(Canvas.TopProperty, points2[nextPoint2].Y);
+                            changeAlfaList.Add(points2[nextPoint2]);
+                            inkCanvas1.Children.Add(mark6);
+                            pointList.Add(mark6);
+                    }
+                    catch (Exception es)
+                    {
+                        //nextPoint = 0;
+                    }
+                    break;
             }
+        }
+
+        PolyLineSegment GetBezierApproximation(Point[] controlPoints, int outputSegmentCount)
+        {
+            Point[] points = new Point[outputSegmentCount + 1];
+            for (int i = 0; i <= outputSegmentCount; i++)
+            {
+                double t = (double)i / outputSegmentCount;
+                points[i] = GetBezierPoint(t, controlPoints, 0, controlPoints.Length);
+            }
+            return new PolyLineSegment(points, true);
+        }
+
+        Point GetBezierPoint(double t, Point[] controlPoints, int index, int count)
+        {
+            if (count == 1)
+                return controlPoints[index];
+            var P0 = GetBezierPoint(t, controlPoints, index, count - 1);
+            var P1 = GetBezierPoint(t, controlPoints, index + 1, count - 1);
+            return new Point((1 - t) * P0.X + t * P1.X, (1 - t) * P0.Y + t * P1.Y);
+        }
+
+        private void Bezier(object sender, RoutedEventArgs e)
+        {
+            var b = GetBezierApproximation(points, 256);
+            PathFigure pf = new PathFigure(b.Points[0], new[] { b }, false);
+            PathFigureCollection pfc = new PathFigureCollection();
+            pfc.Add(pf);
+            var pge = new PathGeometry();
+            pge.Figures = pfc;
+            System.Windows.Shapes.Path p = new System.Windows.Shapes.Path();
+            p.Data = pge;
+            p.Stroke = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            inkCanvas1.Children.Add(p);
+            nextPoint = 0;
         }
 
         private void inkCanvas1_MouseMove(object sender, MouseEventArgs e)
@@ -184,6 +330,14 @@ namespace MyPhotoEditor
                     line.X2 = q.X;
                     line.Y2 = q.Y;
                     break;
+                case 4:
+                    q = e.GetPosition(inkCanvas1);
+                    
+                    break;
+                case 6:
+                    q = e.GetPosition(inkCanvas1);
+                    break;
+
             }
 
         }
@@ -201,6 +355,7 @@ namespace MyPhotoEditor
             state = 3;
             grid_Change.Visibility = Visibility.Visible;
             Grid_LoadingFiles.Visibility = Visibility.Collapsed;
+            Grid_2d.Visibility = Visibility.Collapsed;
             ButtonLine.Background=Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -212,6 +367,7 @@ namespace MyPhotoEditor
             state = 2;
             grid_Change.Visibility = Visibility.Visible;
             Grid_LoadingFiles.Visibility = Visibility.Collapsed;
+            Grid_2d.Visibility = Visibility.Collapsed;
             ButtonEllipse.Background = Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -224,6 +380,7 @@ namespace MyPhotoEditor
             state = 1;
             grid_Change.Visibility = Visibility.Visible;
             Grid_LoadingFiles.Visibility = Visibility.Collapsed;
+            Grid_2d.Visibility = Visibility.Collapsed;
             ButtonRectangle.Background = Brushes.CornflowerBlue;
             grid_CMYK.Visibility = Visibility.Collapsed;
         }
@@ -258,6 +415,7 @@ namespace MyPhotoEditor
             grid_Change.Visibility = Visibility.Collapsed;
             grid_CMYK.Visibility = Visibility.Collapsed;
             Grid_LoadingFiles.Visibility = Visibility.Visible;
+            Grid_2d.Visibility = Visibility.Collapsed;
             string filename = "";
             PPMReader ppm = new PPMReader();
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -586,34 +744,6 @@ namespace MyPhotoEditor
 
         private void ButtonBrightness_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    int value;
-            //    if (bitmap != null)
-            //    {
-            //        for (int i = 0; i < bitmap.Width; i++)
-            //        {
-            //            for (int j = 0; j < bitmap.Height; j++)
-            //            {
-            //                var color = bitmap.GetPixel(i, j);
-            //                int tempvalue;
-            //                var r = color.R;
-            //                var g = color.G;
-            //                var b = color.B;
-
-            //                var intensity = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-            //                color = System.Drawing.Color.FromArgb((int)(intensity), (int)(intensity), (int)(intensity));
-
-            //                bitmap.SetPixel(i, j, color);
-            //            }
-            //        }
-            //        Reload();
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex);
-            //}
             CheckTextBox();
             int value,valr,valb,valg, sumr, sumg, sumb;
             //valr = Convert.ToInt32(fileR.Text);
@@ -723,11 +853,127 @@ namespace MyPhotoEditor
             }
         }
 
+        private void buttonHistogram_Click(object sender, RoutedEventArgs e)
+        {
+            HistogramClass histogram = new HistogramClass(bitmap);
+            Histogram hisWindow = new Histogram(histogram);
+            hisWindow.Show();
+        }
+
+        private void buttonBinar_Click(object sender, RoutedEventArgs e)
+        {
+            Thresholding win3 = new Thresholding();
+            win3.Owner = this;
+            win3.Show();
+        }
+
+        public void doBinarization(int value)
+        {
+            try
+            {
+                // Variable for image brightness
+                double avgBright = 0;
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        // Get the brightness of this pixel
+                        avgBright += bitmap.GetPixel(x, y).GetBrightness();
+                    }
+                }
+
+                // Get the average brightness and limit it's min / max
+                avgBright = avgBright / (bitmap.Width * bitmap.Height);
+                avgBright = avgBright < .3 ? .3 : avgBright;
+                avgBright = avgBright > .7 ? .7 : avgBright;
+
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    for (int y = 0; y < bitmap.Height; y++)
+                    {
+                        if (bitmap.GetPixel(x, y).GetBrightness() > avgBright) bitmap.SetPixel(x, y, System.Drawing.Color.White);
+                        else bitmap.SetPixel(x, y, System.Drawing.Color.Black);
+                    }
+                }
+                Reload();
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+                //MessageBox.Show(e.Message);
+            };
+        }
+
+        private void buttonBezier_Click(object sender, RoutedEventArgs e)
+        {
+            state = 4;
+        }
+
+        private void buttonDoBezier_Click(object sender, RoutedEventArgs e)
+        {
+            inkCanvas1.Children.Clear();
+            Bezier(sender, e);
+        }
+
+        private void button2d_Click(object sender, RoutedEventArgs e)
+        {
+            state = 5;
+            Grid_2d.Visibility = Visibility.Visible;
+            grid_Change.Visibility = Visibility.Collapsed;
+            grid_CMYK.Visibility = Visibility.Collapsed;
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
+        }
+
+        private void buttonKropka_Click(object sender, RoutedEventArgs e)
+        {
+            state = 6;
+        }
+
+        private void buttonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            stateButton = 0;
+        }
+        
+
+        private void buttonChangeAlfa_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbPointX.Text) && string.IsNullOrWhiteSpace(tbPointY.Text) && string.IsNullOrWhiteSpace(tbAlfa.Text))
+                return;
+
+            changeLX = Convert.ToInt32(tbPointX.Text);
+            changeLY = Convert.ToInt32(tbPointY.Text);
+            changeL = Convert.ToInt32(tbAlfa.Text);
+            if(state == 6)
+            {
+                var q = pointList[pointList.Count() - 1];
+                changeLX = Convert.ToInt32(Canvas.GetLeft(q));
+                changeLY = Convert.ToInt32(Canvas.GetTop(q));
+            }
+            double xp,yp;
+            xp = changeLX + (x - changeLX)*Math.Cos(changeL)-(y-changeLY)*Math.Sin(changeL);
+            yp = changeLY + (x - changeLX) * Math.Sin(changeL) - (y - changeLY) * Math.Cos(changeL);
+            rectList[rectList.Count() - 1].SetValue(Canvas.LeftProperty, xp);
+            rectList[rectList.Count() - 1].SetValue(Canvas.TopProperty, yp);
+        }
+
+        private void buttonAccept_Click(object sender, RoutedEventArgs e)
+        {
+            if(!(string.IsNullOrWhiteSpace(tbH.Text) ) && !(string.IsNullOrWhiteSpace(tbV.Text)))
+            {
+                stateButton = 1;
+                h = Convert.ToInt32(tbH.Text);
+                v = Convert.ToInt32(tbV.Text);
+                //pointList[pointList.Count - 1].SetValue(Canvas.LeftProperty, points2[nextPoint].X + h);
+                //pointList[pointList.Count - 1].SetValue(Canvas.TopProperty, points2[nextPoint].Y + v);
+                //inkCanvas1.Children.Add(pointList[pointList.Count - 1]);
+            }
+        }
 
         private void ButtonChangeCMYK_OnClick(object sender, RoutedEventArgs e)
         {
             grid_Change.Visibility = Visibility.Collapsed;
             Grid_LoadingFiles.Visibility = Visibility.Collapsed;
+            Grid_2d.Visibility = Visibility.Collapsed;
             double k, c, m, y;
             int r, g, b;
            
@@ -821,6 +1067,7 @@ namespace MyPhotoEditor
         {
 
             grid_CMYK.Visibility = Visibility.Visible;
+            Grid_2d.Visibility = Visibility.Collapsed;
         }
     }
 

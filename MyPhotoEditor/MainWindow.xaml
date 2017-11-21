@@ -28,6 +28,30 @@
             <Image Name="ImageView">
             </Image>
         </Canvas>
+        <Grid x:Name="Grid_2d" Grid.Row="0" Grid.RowSpan="4" Grid.Column="1" Grid.ColumnSpan="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Foreground="White" Text="H:" Grid.Column="0" Grid.Row="0"/>
+            <TextBox x:Name="tbH" Grid.Column="0" Grid.Row="1"></TextBox>
+            <TextBlock Foreground="White" Text="V:" Grid.Column="1" Grid.Row="0"/>
+            <TextBox x:Name="tbV" Grid.Column="1" Grid.Row="1"></TextBox>
+            <Button x:Name="buttonAccept" Grid.Column="2" Grid.Row="1" Content="Accept" Click="buttonAccept_Click"></Button>
+            <Button x:Name="buttonCancel" Grid.Column="3" Grid.Row="1" Content="Cancel" Click="buttonCancel_Click"></Button>
+        </Grid>
         <Grid x:Name="Grid_LoadingFiles" Grid.Row="0" Grid.RowSpan="4" Grid.Column="1" Grid.ColumnSpan="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -115,6 +139,16 @@
             <xctk:ColorPicker BorderBrush="CornflowerBlue"  Grid.Column="1" Grid.Row="4" Name="ClrPckerBackground" SelectedColorChanged="ClrPcker_Background_SelectedColorChanged"></xctk:ColorPicker>
             <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonCMYK" Grid.Row="5" Grid.Column="1"  Click="ButtonCMYK_OnClick" Content="CMYK" >
             </Button>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonHistogram" Grid.Row="6" Grid.Column="1"  Click="buttonHistogram_Click" Content="HIST" >
+            </Button>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonBinar" Grid.Row="7" Grid.Column="1"  Click="buttonBinar_Click" Content="BINAR" >
+            </Button>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonBezier" Grid.Row="8" Grid.Column="1"  Click="buttonBezier_Click" Content="BEZIER" >
+            </Button>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="buttonDoBezier" Grid.Row="9" Grid.Column="1"  Click="buttonDoBezier_Click" Content="DOBZAIER" >
+            </Button>
+            <Button BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" x:Name="button2d" Grid.Row="10" Grid.Column="1"  Click="button2d_Click" Content="2d" >
+            </Button>
         </Grid>
         <Grid x:Name="grid_CMYK" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
@@ -153,8 +187,9 @@
             <TextBox x:Name="tbG"  FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="4" Grid.Row="1"></TextBox>
             <TextBox x:Name="tbB"  FontSize="8" BorderBrush="CornflowerBlue" Grid.Column="4" Grid.Row="2"></TextBox>
         </Grid>
-        <Grid x:Name="grid_Change" Grid.Column ="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3">
+        <Grid x:Name="grid_Change" Grid.Column ="1" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="4">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -162,15 +197,25 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="2*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="4*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <TextBlock Foreground="White" Text="Szerokosc:" Grid.Column="0"/>
             <TextBlock Foreground="White" Text="Wysokość:" Grid.Column="1"/>
             <TextBox x:Name="tbChangeWidth" BorderBrush="CornflowerBlue" Grid.Column="0" Grid.Row="1"></TextBox>
             <TextBox x:Name="tbChangeHeight" BorderBrush="CornflowerBlue" Grid.Column="1" Grid.Row="1"></TextBox>
             <Button x:Name="buttonChangeSizeIn" BorderBrush="CornflowerBlue" Grid.Column="2" Grid.Row="1" Content="Zmien" Background="Transparent" Foreground="White" Click="buttonChangeSizeIn_Click"/>
+            <TextBlock Foreground="White" Text="X:" Grid.Row="2" Grid.Column="0"/>
+            <TextBlock Foreground="White" Text="Y:" Grid.Row="2" Grid.Column="1"/>
+            <TextBlock Foreground="White" Text="L:" Grid.Row="2" Grid.Column="2"/>
+            <TextBox x:Name="tbPointX" Grid.Row="3" Grid.Column="0"/>
+            <TextBox x:Name="tbPointY" Grid.Row="3" Grid.Column="1"/>
+            <TextBox x:Name="tbAlfa" Grid.Row="3" Grid.Column="2"/>
+            <Button x:Name="buttonChangeAlfa" Grid.Column="3" Grid.Row="3" BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" Content="ChangeAlfa" Click="buttonChangeAlfa_Click"/>
+            <Button x:Name="buttonKropka" Grid.Column="4" Grid.Row="3" BorderBrush="CornflowerBlue" Background="Transparent" Foreground="White" Content="KROPKA" Click="buttonKropka_Click" />
         </Grid>
     </Grid>
 </Window>
