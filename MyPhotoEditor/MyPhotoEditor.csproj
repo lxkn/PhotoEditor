@@ -83,6 +83,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BitmapConverter.cs" />
+    <Compile Include="DirectBitmap.cs" />
+    <Compile Include="GrayConversionMode.cs" />
+    <Compile Include="IntViewModel.cs" />
+    <Compile Include="MorphologicalOperators.cs" />
+    <Compile Include="PointTransformation.cs" />
     <Compile Include="Thresholding.xaml.cs">
       <DependentUpon>Thresholding.xaml</DependentUpon>
     </Compile>

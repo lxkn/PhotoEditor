@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -33,9 +34,12 @@ namespace MyPhotoEditor
         private Point p;
         private Point q;
         private Rect s;
+        private int _maskSize = 3;
         private Rectangle rectangle;
         private Ellipse ellipse;
         private Line line;
+        private DirectBitmap _directBitmap;
+        private IntViewModel[,] _mask;
         private List<Line> lines;
         private List<Ellipse> ellipses;
         private List<Rectangle> rectList;
@@ -48,7 +52,7 @@ namespace MyPhotoEditor
         Bitmap bitmap;
         int state;
         private bool buttonRClicked, buttonEClicked, buttonLClicked, buttonCClicked;
-        Point[] points = new Point[4];
+        Point[] points = new Point[10];
         Point[] points2 = new Point[30];
         Line[] lineArray = new Line[12];
         List<Point> changeAlfaList;
@@ -58,13 +62,38 @@ namespace MyPhotoEditor
         int h = 0, v = 0;
         int changeLX, changeLY, changeL;
         private List<Rectangle> pointList;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
         public ImageSource DisplayedImage
         {
             get { return new BitmapImage(new Uri(@"C:\Users\Seba\Documents\Visual Studio 2017\Projects\MyPhotoEditor\MyPhotoEditor\b.jpg")); }
         }
 
+        public int MaskSize
+        {
+            get
+            {
+                return _maskSize;
+            }
+            set
+            {
+                if(value%2 == 1 && value>=3)
+                {
+                    _maskSize = value;
+                    OnPropertyChanged("MaskSize");
+                }
+            }
+        }
+        
+
         public MainWindow()
         {
+            GenerateMaskView();
             InitializeComponent();
             grid_Change.Visibility = Visibility.Collapsed;
             grid_CMYK.Visibility = Visibility.Collapsed;
@@ -442,7 +471,7 @@ namespace MyPhotoEditor
                     bitmapimage.StreamSource = memory;
                     bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapimage.EndInit();
-
+                    _directBitmap = new DirectBitmap(bitmap);
                     ImageSource imageSource = bitmapimage;
                     ImageView.Source = imageSource;
                 }
@@ -929,6 +958,59 @@ namespace MyPhotoEditor
             state = 6;
         }
 
+        //private void MenuItem_Click(object sender, RoutedEventArgs e)
+        //{
+
+        //}
+
+        //private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        //{
+
+        //}
+
+        private void Dilation_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = MorphologicalOperators.Dilation(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
+        private void Erosion_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = MorphologicalOperators.Erosion(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
+        private void Opening_Click(object sender, RoutedEventArgs e)
+        {
+
+            var bitmap = MorphologicalOperators.Opening(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
+        private void Closing_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = MorphologicalOperators.Closing(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
+        private void Thinning_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = MorphologicalOperators.Thinning(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
+        private void Thickening_Click(object sender, RoutedEventArgs e)
+        {
+            var bitmap = MorphologicalOperators.Thickening(_directBitmap, GetIntMask());
+            ImageSource imageSource = BitmapConverter.GetBitmapSource(bitmap.Bitmap);
+            ImageView.Source = imageSource;
+        }
+
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
             stateButton = 0;
@@ -1068,6 +1150,43 @@ namespace MyPhotoEditor
 
             grid_CMYK.Visibility = Visibility.Visible;
             Grid_2d.Visibility = Visibility.Collapsed;
+        }
+
+        private void GenerateMaskView()
+        {
+            _mask = new IntViewModel[_maskSize, _maskSize];
+            for (int i = 0; i < _maskSize; i++)
+            {
+                for (int j = 0; j < _maskSize; j++)
+                {
+                    _mask[i, j] = new IntViewModel(1);
+                    if (i == _maskSize / 2 && j == _maskSize / 2)
+                    {
+                        _mask[i, j].Value = 2;
+                    }
+                    var textBox = new TextBox();
+                    var binding = new Binding();
+                    binding.Path = new PropertyPath("Value");
+                    binding.Mode = BindingMode.TwoWay;
+                    binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                    binding.Source = _mask[i, j];
+                    Grid.SetRow(textBox, i);
+                    Grid.SetColumn(textBox, j);
+                }
+            }
+        }
+
+        private int[,] GetIntMask()
+        {
+            int[,] mask = new int[_maskSize, _maskSize];
+            for (int i = 0; i < _maskSize; i++)
+            {
+                for (int j = 0; j < _maskSize; j++)
+                {
+                    mask[i, j] = _mask[i, j].Value;
+                }
+            }
+            return mask;
         }
     }
 
