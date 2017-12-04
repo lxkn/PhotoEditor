@@ -1147,7 +1147,7 @@ namespace MyPhotoEditor
 
         private void ButtonCMYK_OnClick(object sender, RoutedEventArgs e)
         {
-
+            Grid_LoadingFiles.Visibility = Visibility.Collapsed;
             grid_CMYK.Visibility = Visibility.Visible;
             Grid_2d.Visibility = Visibility.Collapsed;
         }
